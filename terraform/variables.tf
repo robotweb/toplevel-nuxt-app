@@ -1,27 +1,51 @@
+variable github_token {
+  type        = string
+  default     = ""
+}
+
+variable aws_region {
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "availability_zone1" {
+    type = string
+    default = "us-east-1a"
+}
+
+variable "availability_zone2" {
+    type = string
+    default = "us-east-1b"
+}
+
+variable "aws_route53_zone_id"{
+    type = string
+}
+
+variable "aws_route53_record_name"{
+    type = string
+}
+
+variable "aws_acm_certificate_arn" {
+    type = string
+}
+
 variable "app_name" {
-  default = "nuxt-app"
-}
-
-variable "github_repo" {
-  description = "GitHub repository URL for your Nuxt.js app"
-}
-
-variable "github_branch" {
-  default = "main"
+    type = string
 }
 
 variable "github_owner" {
-  description = "GitHub repository owner"
+    type = string
 }
 
-variable "github_oauth_token" {
-  description = "GitHub OAuth Token"
+variable "github_repo" {
+    type = string
 }
 
-variable "ecs_cluster_name" {
-  default = "nuxt-ecs-cluster"
+variable "github_branch" {
+    type = string
 }
 
-variable "desired_count" {
-  default = 1
+variable "app_port" {
+    type = number
 }
