@@ -1,0 +1,79 @@
+//fonts
+$font-size: 15px;
+$font-family: "Poppins", sans-serif;
+$default-color: #555;
+
+//sizes
+$menu-top-size: 0px;
+$menu-sub-size: 60px;
+$menu-left-size: 230px;
+$element-height: 50px;
+$radius: 7px;
+$box-radius: 12px;
+
+//colours
+$base-color: #0596E4;
+$menu-color: #FFFFFF;
+$menu-top-color: #fff;
+$menu-sub-color: #F9FBFB;
+$primary: $base-color;
+$primary-hover: $base-color;
+$body-background: #fff;
+$menu-hover-background: #A6C8E7;
+$menu-hover-border: #1B5AA3;
+$menu-link-color: #686868;
+
+$blue: #0596E4;
+$blue-light: #D5EDFA;
+
+$green: #32CCA7;
+$green-light: #DEFBED;
+
+$orange: #FFB240;
+$orange-light: #FFF0DA;
+
+$red: #FF5A63;
+$red-light: #FFEDEE;
+
+$teal: #2EB2BA;
+$teal-light: #DAF3F4;
+
+$purple: #BF33F0;
+$purple-light: #F9EAFF;
+
+$black: #444444;
+$black-light: #EEE;
+
+$grey: #ddd;
+$grey-light: rgba(0,0,0,0.025);
+$grey-dark: #bbb;
+
+//shadows
+$box-shadow: 0px 4px 7px 0px rgba(0, 0, 0, 0.03);
+
+//easing
+$easing: cubic-bezier(0.680, -0.550, 0.265, 1.550);
+
+
+//responsive sizes
+@mixin for-phone-only {
+    @media (max-width: 599px) { @content; }
+}
+@mixin for-tablet-down {
+    @media (max-width: 900px) { @content; }
+}
+@mixin for-tablet-portrait-up {
+    @media (min-width: 600px) { @content; }
+}
+@mixin for-tablet-landscape-up {
+    @media (min-width: 900px) { @content; }
+}
+@mixin for-desktop-down {
+    @media (max-width: 1200px) { @content; }
+}
+@mixin for-desktop-up {
+    @media (min-width: 1200px) { @content; }
+}
+@mixin for-big-desktop-up {
+    @media (min-width: 1800px) { @content; }
+}
