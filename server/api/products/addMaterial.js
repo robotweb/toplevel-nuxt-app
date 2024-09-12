@@ -16,8 +16,6 @@ export default defineEventHandler(async (event) => {
                 "description" : body.description,
                 "discount" : body.discount,
                 "supplier" : body.supplier,
-                "quantity" : body.quantity,
-                'unitOfMeasure' : body.unitOfMeasure,
                 "unitCost" : body.unitCost
             },{
                 headers: {

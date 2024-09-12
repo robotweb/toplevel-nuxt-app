@@ -23,7 +23,6 @@
         <button type="submit">
           Login
         </button>
-        <p v-if="errorMessage">{{ errorMessage }}</p>
       </form>
       <LoaderRipple v-if="isLoading" />
     </div>
@@ -31,7 +30,6 @@
   
   <script>
 import axios from 'axios';
-
   export default {
   data() {
     return {
@@ -55,6 +53,7 @@ import axios from 'axios';
       console.log(this.request.data.statusCode)
       if(this.request.data.statusCode != 200){
         this.errorMessage = this.request.data.message;
+        this.triggerToast('error','Error',this.errorMessage)
         throw new Error(this.request.data.message)
       }
       console.log(this.request.data.token)
@@ -64,7 +63,16 @@ import axios from 'axios';
         console.log(error)
         this.isLoading = false;
       }
-    }
+    },
+    triggerToast(type, title, message) {
+      const { $triggerToast } = useNuxtApp();
+
+      $triggerToast({
+        title: title,
+        message: message,
+        type: type, // e.g., success, error, etc.
+      });
+    },
   }
   }
 </script>

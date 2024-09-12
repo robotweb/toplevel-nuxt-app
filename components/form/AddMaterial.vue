@@ -34,24 +34,6 @@
       <div class="row">
         <div class="col-6">
           <div class="col-12">
-            <label for="material-quantity">Quantity</label>
-          </div>
-          <div class="col-12">
-            <input id="material-quantity" v-model="quantity" required>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="col-12">
-            <label for="material-unitOfMeasure">Unit of Measure</label>
-          </div>
-          <div class="col-12">
-            <input id="material-unitOfMeasure" v-model="unitOfMeasure" required>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div class="col-12">
             <label for="material-unitCost">Cost Price</label>
           </div>
           <div class="col-12">
@@ -88,8 +70,6 @@ export default {
       description: '',
       discount: 0,
       supplier: '',
-      quantity: 0,
-      unitOfMeasure: '',
       unitCost: 0,
       calculatedPrice: '0.00',
       isLoading: false,
@@ -108,8 +88,6 @@ export default {
           description: this.description,
           discount: this.discount,
           supplier: this.supplier,
-          quantity: this.quantity,
-          unitOfMeasure: this.unitOfMeasure,
           unitCost: this.unitCost
         },{
             headers: {
@@ -121,16 +99,18 @@ export default {
 
         console.log(response);
         if(response.data.statusCode != 200){
-          throw new Error(response.data.details.message)
+          throw new Error(response.data.details.detail)
         }
 
         //const result = await response.json();
-        console.log('Data submitted successfully:', response.data.details);
+        this.triggerToast("success","Success",response.data.message)
+        //console.log('Data submitted successfully:', response.data.details);
         this.$emit('form-submitted');
 
       // Redirect to a protected route after login
     } catch (error) {
-        console.error('Error submitting data:', error);
+      this.triggerToast("error","Error",error.message);
+      //console.error('Error submitting data:', error);
     }
 
   
@@ -140,8 +120,17 @@ export default {
   },
   keyUp(){
     this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
-  }
-}
+  },
+  triggerToast(type, title, message) {
+  const { $triggerToast } = useNuxtApp();
+
+  $triggerToast({
+    title: title,
+    message: message,
+    type: type, // e.g., success, error, etc.
+  });
+},
+},
 };
 </script>
 <style>

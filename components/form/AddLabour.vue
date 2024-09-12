@@ -88,25 +88,33 @@ export default{
 
         console.log(response);
         if(response.data.statusCode != 200){
-          throw new Error(response.data.details.message)
+          throw new Error(response.data.details)
         }
 
         //const result = await response.json();
-        console.log('Data submitted successfully:', response.data.details);
+        //console.log('Data submitted successfully:', response.data.message);
+        this.triggerToast("success","Success",response.data.message)
         this.$emit('form-submitted');
 
       // Redirect to a protected route after login
     } catch (error) {
-        console.error('Error submitting data:', error);
+        //console.error('Error submitting data:', error);
+        this.triggerToast("error","Error",error.message);
     }
     this.isLoading = false;
-
-
-
         },
         keyUp(){
             this.calculatedPrice = this.unitCost;
-        }
+        },
+        triggerToast(type, title, message) {
+    const { $triggerToast } = useNuxtApp();
+
+    $triggerToast({
+      title: title,
+      message: message,
+      type: type, // e.g., success, error, etc.
+    });
+  },
     }
 }
 </script>

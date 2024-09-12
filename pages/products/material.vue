@@ -13,6 +13,7 @@
 </template>
 <script>
 definePageMeta({
+  layout: 'auth',
   middleware: [
     function (to, from) {
       // Custom inline middleware
