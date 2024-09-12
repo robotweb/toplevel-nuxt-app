@@ -1,7 +1,6 @@
 <template>
     <div>
       <slot />
-      <p>hello</p>
       <Toast ref="toast" />
     </div>
 </template>

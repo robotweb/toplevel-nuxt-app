@@ -122,14 +122,14 @@ export default {
     this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
   },
   triggerToast(type, title, message) {
-  const { $triggerToast } = useNuxtApp();
+    const { $triggerToast } = useNuxtApp();
 
-  $triggerToast({
-    title: title,
-    message: message,
-    type: type, // e.g., success, error, etc.
-  });
-},
+    $triggerToast({
+      title: title,
+      message: message,
+      type: type, // e.g., success, error, etc.
+    });
+  },
 },
 };
 </script>
