@@ -1,10 +1,8 @@
 <template>
     <div class="login-grid">
-        <div class="login-content">            
-            <Login />
-        </div>
+        <Login />
     </div>
-  </template>
+</template>
 <script setup>
 definePageMeta({
     layout: 'noauth',

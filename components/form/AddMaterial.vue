@@ -1,87 +1,106 @@
 <template>
+   <Dialog v-model:open="isDialogOpen">
+    <Button @click="openDialog">Add Material</Button>
+    <DialogContent>
+  <DialogHeader>
+        <DialogTitle></DialogTitle>
+        <DialogDescription>
+        </DialogDescription>
+  </DialogHeader>
   <div class="material-container">
     <form v-show="!isLoading" @submit.prevent="submitForm">
       <div class="row">
         <div class="col-6">
           <div class="col-12">
-            <label  for="material-name">Name</label>
-          </div>
-          <div class="col-12">
-            <input  id="material-name" v-model="name" required />
+            <Input type="string" placeholder="Code"  v-model="code" required/>
           </div>
         </div>
         <div class="col-6">
           <div class="col-12">
-            <label for="material-code">Code</label>
+            <Input type="string" placeholder="Name"  v-model="name" required/>
           </div>
-          <div class="col-12">
-            <input id="material-code" v-model="code" required />
-          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <Textarea v-model="description" required  placeholder="Description" />
         </div>
       </div>
       <div class="row">
         <div class="col-12">
-            <label for="material-description">Description</label>
-            <textarea id="material-description" v-model="description" required></textarea>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-            <label for="material-supplier">Supplier</label>
+            <label for="material-supplier">Supplier</label> 
             <input id="material-supplier" v-model="supplier" required>
         </div>
       </div>
       <div class="row">
         <div class="col-6">
           <div class="col-12">
-            <label for="material-unitCost">Cost Price</label>
-          </div>
-          <div class="col-12">
-            <input id="material-unitCost" v-model="unitCost" @keyup="keyUp()" required>
+            <Input type="number" placeholder="Price"  v-model="unitCost" required @keyup="keyUp()"/>
           </div>
         </div>
         <div class="col-6">
           <div class="col-12">
-            <label for="material-discount">Discount (%)</label>
-          </div>
-          <div class="col-12">
-            <input id="material-discount" v-model="discount" @keyup="keyUp()" required>
+            <Input type="number" placeholder="Discount (%)"  v-model="discount" required @keyup="keyUp()"/>
           </div>
         </div>
       </div>
       <div class="row">
-        <label class="col-12"><p><strong>Price R {{ calculatedPrice }}</strong></p></label>
-        <button class="button" type="submit">Add Material</button>
-      </div>
-
-    <!-- Add other form fields as needed -->
+        <label class="col-12"><p><strong>Price {{ calculatedPrice }}</strong></p></label>
+          <Button type="submit">Save</Button>
+    </div>
   </form>
   <LoaderRipple v-if="isLoading"/>
+  
 
   </div>
+</DialogContent>
+</Dialog>
 </template>
+
 <script>
 import axios from 'axios'
+import { inject } from 'vue'
+
 export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       name: '',
       code: '',
       description: '',
-      discount: 0,
+      discount: null,
       supplier: '',
-      unitCost: 0,
+      unitCost: null,
       calculatedPrice: '0.00',
       isLoading: false,
+      isDialogOpen: false,
+      toast: inject('toast')
     };
   },
   methods: {
+    resetForm(){
+      this.name = '';
+      this.code = '';
+      this.description = '';
+      this.discount = null;
+      this.supplier = '';
+      this.unitCost = null;
+      this.calculatedPrice = '0.00';
+    },
+    openDialog(){
+      this.isDialogOpen = true;
+    },
+    closeDialog(){
+      this.isDialogOpen = false;
+    },
     async submitForm() {
       this.isLoading = true;
       try {
         const token = localStorage.getItem('auth');
-        //console.log(token);
-
         const response = await axios.post(`/api/products/addMaterial`,{
           name: this.name,
           code: this.code,
@@ -103,9 +122,11 @@ export default {
         }
 
         //const result = await response.json();
-        this.triggerToast("success","Success",response.data.message)
+        this.triggerToast('success', 'Success', 'Product added successfully.')
+        this.closeDialog();
+        this.resetForm();
+        this.$emit('material-added');
         //console.log('Data submitted successfully:', response.data.details);
-        this.$emit('form-submitted');
 
       // Redirect to a protected route after login
     } catch (error) {
@@ -121,15 +142,6 @@ export default {
   keyUp(){
     this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
   },
-  triggerToast(type, title, message) {
-    const { $triggerToast } = useNuxtApp();
-
-    $triggerToast({
-      title: title,
-      message: message,
-      type: type, // e.g., success, error, etc.
-    });
-  },
 },
 };
 </script>
@@ -141,7 +153,6 @@ export default {
 }
 
 .material-container{
-  width: 500px;
   max-width: 100%;
   min-height: 300px;
   position: relative;

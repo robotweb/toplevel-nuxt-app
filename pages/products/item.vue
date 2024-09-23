@@ -1,7 +1,7 @@
 <template>
     <div class="page-header">
-      <h2>Product / Service</h2>
-      <button @click="successToast">Add Product</button>
+      <h2>&nbsp;</h2>
+      <button @click="successToast">Save</button>
     </div>
 </template>
 <script>
@@ -15,21 +15,10 @@ definePageMeta({
   ],
   layout: 'auth',
 });
-export default{
-  setup() {
-    const { $eventBus } = useNuxtApp()
 
-    const successToast = () => {
-      $eventBus.emit('show-toast', {
-        title: "Success",
-        message: '',
-        type: 'success',
-      })
-    }
-
-    return {
-      successToast
-    }
-  }
-}
+export default {
+  methods: {
+    
+  },
+};
 </script>

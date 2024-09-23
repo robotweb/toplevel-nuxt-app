@@ -1,20 +1,27 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   plugins: [
-    '~/plugins/eventBus.js',
     '~/plugins/toast.js'
   ],
+
   compatibilityDate: '2024-04-03',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
+
   css: [
     "@/assets/styles/layout.scss"
   ],
+
   vite: {
+    server: {
+      hmr: {
+        protocol: 'ws',
+        host: 'localhost'
+      }
+    },
     define: {
       API_URL: JSON.stringify(process.env.API_URL),
       APP_NAME: JSON.stringify(process.env.APP_NAME),
       API_BASE_URL: JSON.stringify(process.env.API_BASE_URL)
-
     },
     css: {
       preprocessorOptions: {
@@ -24,9 +31,12 @@ export default defineNuxtConfig({
       },
     },
   },
+
   runtimeConfig: {
     public: {
       apiUrl: process.env.API_URL,
     },
   },
+
+  modules: ['@nuxtjs/tailwindcss', 'shadcn-nuxt', "@nuxt/icon"],
 })

@@ -1,55 +1,43 @@
 <template>
-    <div class="labour-container">
-        <form  v-show="!isLoading" @submit.prevent="submitForm">
-        <div class="row">
-        <div class="col-6">
-          <div class="col-12">
-            <label  for="labour-name">Name</label>
+  <Dialog v-model:open="isDialogOpen">
+      <Button @click="openDialog">Add Labour</Button>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle></DialogTitle>
+        <DialogDescription>
+        </DialogDescription>
+      </DialogHeader>
+      <form  v-show="!isLoading" @submit.prevent="submitForm">
+      <div class="row w-full flex flex-row gap-4 my-4">
+          <div class="w-1/2">
+            <Input type="string" placeholder="Code"  v-model="code" required/>
           </div>
-          <div class="col-12">
-            <input  id="labour-name" v-model="name" required />
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="col-12">
-            <label for="labour-code">Code</label>
-          </div>
-          <div class="col-12">
-            <input id="labour-code" v-model="code" required />
+          <div class="w-1/2">
+            <Input type="string" placeholder="Name"  v-model="name" required/>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-            <label for="labour-description">Description</label>
-            <textarea id="labour-description" v-model="description" required></textarea>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div class="col-12">
-            <label  for="labour-unitCost">Cost</label>
-          </div>
-          <div class="col-12">
-            <input  id="labour-unitCost" v-model="unitCost" required @keyup="keyUp()"/>
+        <div class="row my-4">
+          <div class="w-full">
+            <Textarea type="string" placeholder="Description"  v-model="description" required/>
           </div>
         </div>
-        <div class="col-6">
-          <div class="col-12">
-            <label for="labour-unitType">Unit Type (hour, day, etc.)</label>
+        <div class="row w-full flex flex-row gap-4 my-4">
+            <div class="w-1/2">
+              <Input type="number" placeholder="Cost" v-model="unitCost" required @keyup="keyUp()"/>
+            </div>
+            <div class="w-1/2">
+              <Input type="string" placeholder="Unit Type" v-model="unitType" required/>
+            </div>
           </div>
-          <div class="col-12">
-            <input id="labour-unitType" v-model="unitType" required />
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <label class="col-12"><p><strong>Price R {{ calculatedPrice }}</strong></p></label>
-        <button class="button" type="submit">Add Labour</button>
-      </div>
-      </form>
-      <LoaderRipple v-if="isLoading"/>
-    </div>
+      <DialogFooter>
+      <Button type="submit">Save</Button>
+    </DialogFooter>
+    </form>
+    </DialogContent>
+
+    <LoaderRipple v-if="isLoading"/>
+  </Dialog>
+
 </template>
 <script>
 import axios from 'axios'
@@ -59,13 +47,20 @@ export default{
             name: "",
             code: "",
             description: "",
-            unitCost: 0,
+            unitCost: null,
             unitType: "",
             calculatedPrice: 0,
-            isLoading: false
+            isLoading: false,
+            isDialogOpen: false
         }
     },
     methods: {
+      openDialog(){
+        this.isDialogOpen = true;
+      },
+      closeDialog(){
+        this.isDialogOpen = false;
+      },
         async submitForm(){
             this.isLoading = true;
             try {
@@ -94,6 +89,7 @@ export default{
         //const result = await response.json();
         //console.log('Data submitted successfully:', response.data.message);
         this.triggerToast("success","Success",response.data.message)
+        this.closeDialog();
         this.$emit('form-submitted');
 
       // Redirect to a protected route after login

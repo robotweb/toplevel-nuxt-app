@@ -1,14 +1,8 @@
 <template>
   <div>
-      <div>
-        <div class="page-header">
-          <h2>Labour</h2>
-          <button @click="openPopup">Add Labour</button>
-        </div>
-          <Popup :showPopup="showPopup" @close="closePopup">
-            <FormAddLabour @form-submitted="closePopup"/>
-          </Popup>
-      </div>
+    <div class="row">
+      <FormAddLabour/>
+    </div>
   </div>
 </template>
 <script>
@@ -23,20 +17,6 @@ definePageMeta({
 });
 
 export default {
-data() {
-  return {
-    showPopup: false
-  };
-},
-methods: {
-  openPopup(){
-    this.showPopup = true;
-    console.log(this.showPopup);
-  },
-  closePopup() {
-    this.showPopup = false;
-    console.log(this.showPopup);
-  }
-},
+
 };
 </script>

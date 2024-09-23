@@ -1,99 +1,145 @@
 <template>
-    <div class="container">
-        <div class="side-bar">
-          <div>
-            <div class="logo-container">
-              <img src="/public/tl_logo.svg"/>
-            </div>
-            <UiMenuItem label="Dashboard" link="/" icon="pie_chart"/>
-            <div @click="toggleSales">
-              <UiMenuItem label="Sales" icon="credit_card"/>
-            </div>
-            <div v-if="showSales" class="sub-menu">
-                <UiMenuItem label="Customers" link="/sales/customer"/>
-                <UiMenuItem label="Estimates" link="/"/>
-                <UiMenuItem label="Purchase Orders" link="/"/>
-                <UiMenuItem label="Invoices" link="/"/>
-            </div>
-            <div @click="toggleProducts">
-              <UiMenuItem label="Products" icon="inventory_2"/>
-            </div>
-            <div v-if="showProducts" class="sub-menu">
-                <UiMenuItem label="Product" link="/products/item"/>
-                <UiMenuItem label="Material" link="/products/material"/>
-                <UiMenuItem label="Labour" link="/products/labour"/>
-            </div>
-          </div>
-          <div class="side-bar-footer">
-            <UiMenuItem label="Settings" icon="settings"/>
-            <UiMenuItem @click="logout" label="Logout" icon="logout"></UiMenuItem>
-          </div>
+  <div class="h-screen w-screen">
+  <ResizablePanelGroup
+    id="handle-demo-group-1"
+    direction="horizontal"
+    class="h-full items-stretch"
+  >
+    <ResizablePanel id="handle-demo-panel-1" 
+    :default-size="25" 
+    :min-size="15"
+    :max-size="20"
+    @expand="onExpand"
+    @collapse="onCollapse"
+    >
+      <div class="flex flex-col justify-between h-full p-6">
+        <div class="flex flex-col">
+          <Nav :links="dashboard" />
+          <Button @click="toggleSales" variant="ghost">
+            <Icon name="lucide:credit-card" class="mr-2 size-6"/>
+            Sales
+            <span class="ml-auto"></span> 
+          </Button>
+          <Nav :links="salesLinks" v-if="salesCollapsed" />
+          <Button @click="toggleProduct" variant="ghost">
+            <Icon name="lucide:package" class="mr-2 size-6"/>
+            Products
+            <span class="ml-auto"></span> 
+          </Button>
+          <Nav :links="productLinks" v-if="productCollapsed" />
         </div>
-        <div class="slot-content">
-            <slot />
-        </div>
-    </div>
-    <Toast ref="toast" />
+
+        <Nav :links="footerLinks" />      
+      </div>
+    </ResizablePanel>
+    <ResizableHandle id="handle-demo-handle-1" with-handle />
+    <ResizablePanel id="handle-demo-panel-2" :default-size="75">
+      <div class="flex h-full w-full p-6">
+        <slot />
+      </div>
+    </ResizablePanel>
+  </ResizablePanelGroup>
+</div>
+<Toast />
 </template>
 
 <script>
-export default {
+
+export default{
   data() {
-    return {
-      showSales: false, // Initially, children are hidden
-      showProducts: false
-    };
+    return{
+      isCollapsed: false,
+      salesCollapsed: false,
+      productCollapsed: false,
+      dashboard: [
+      {
+          title: 'Dashboard',
+          icon: 'lucide:pie-chart',
+          href: ''
+        }
+      ],
+      salesLinks: [
+        {
+          title: 'Customers',
+          label: '128',
+          href: '/sales/customer'
+        },
+        {
+          title: 'Estimates',
+          label: '128',
+          href: '#'
+        },
+        {
+          title: 'Purchase Orders',
+          label: '128',
+          href: '#'
+        },
+        {
+          title: 'Invoices',
+          label: '128',
+          href: '#'
+        },
+      ],
+      productLinks: [
+      {
+          title: 'Product',
+          label: '128',
+          href: '/products'
+        },
+        {
+          title: 'Material',
+          label: '128',
+          href: '/products/material'
+        },
+        {
+          title: 'Labour',
+          label: '128',
+          href: '/products/labour'
+        },
+        {
+          title: 'Supplier',
+          label: '128',
+          href: '/products/supplier'
+        },
+        {
+          title: 'Category',
+          label: '128',
+          href: '/products/category'
+        }
+      ],
+      footerLinks : [
+      {
+          title: 'Settings',
+          label: '128',
+          icon: 'lucide:settings',
+          href: '#'
+        },
+        {
+          title: 'Logout',
+          label: '128',
+          icon: 'lucide:log-out',
+          action: this.logout
+        },
+      ]
+    }
   },
   methods: {
-    toggleSales() {
-      this.showSales = !this.showSales; // Toggle visibility
+    onCollapse(){
+      this.isCollapsed = true
     },
-    toggleProducts(){
-      this.showProducts = !this.showProducts
+    onExpand() {
+      this.isCollapsed = false
+    },
+    toggleSales(){
+      this.salesCollapsed = !this.salesCollapsed
+    },
+    toggleProduct(){
+      this.productCollapsed = !this.productCollapsed
     },
     logout(){
       localStorage.removeItem('auth')
       navigateTo('/login')
-    },
+    }
   },
-  mounted() {
-    const { $setToastInstance } = useNuxtApp();
-    $setToastInstance(this.$refs.toast); // Set the toast instance
-  }
-};
+}
 </script>
-<style lang="scss">
-.top-menu{
-    width: 100vw;
-    height: $menu-top-size;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0px;
-    box-shadow: $box-shadow;
-}
-
-.container{
-    width: 100vw;
-    display: flex;
-}
-
-.side-bar{
-    width: $menu-left-size;
-    height: calc(100vh - $menu-top-size);
-    background: $menu-color;
-    justify-content: space-between;
-    display: flex;
-    flex-direction: column;
-}
-
-.slot-content{
-    width: calc(100vw - $menu-left-size);
-    height: calc(100vh - $menu-top-size);
-    background: $body-background;
-    box-shadow: inset 10px 0px 15px -5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-
-}
-
-</style>

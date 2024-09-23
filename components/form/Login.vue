@@ -1,42 +1,50 @@
 <template>
-    <div>
-      <form v-if="!isLoading" @submit="login">
-        <div class="login-box-header">
-          <img src="/public/tl_logo.svg" width="150px">
-        </div>
-        <div>
-          <div class="form-label-container">
-            <label for="email">Email:</label>
-          </div>
-          <div class="form-input-container">
-            <input v-model="email" type="email" id="email" required />
-          </div>
-        </div>
-        <div>
-          <div class="form-label-container">
-            <label for="password">Password:</label>
-          </div>
-          <div class="form-input-container">
-            <input v-model="password" type="password" id="password" required />
+  <Card class="w-[350px] min-h-[300px]" v-if="!isLoading">
+    <form v-if="!isLoading" @submit="login">
+        <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>
+                Enter your email and password to login
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+        <div class="row my-2">
+          <div class="w-full">
+            <Input v-model="email" type="email" id="email" required placeholder="Email"/>
           </div>
         </div>
-        <button type="submit">
-          Login
-        </button>
+        <div class="row my-2">
+          <div class="w-full">
+            <Input v-model="password" type="password" id="password" required placeholder="Password"/>
+          </div>
+        </div>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit">
+            Login
+          </Button>
+        </CardFooter>
       </form>
-      <LoaderRipple v-if="isLoading" />
-    </div>
+    </Card>
+    
+    <Card class="w-[350px] min-h-[300px]" style="position: relative;" v-if="isLoading">
+      <LoaderRipple />
+    </Card>
+    
   </template>
   
   <script>
 import axios from 'axios';
   export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       isLoading: false,
       email: null, 
       password: null,
-      errorMessage: null,
       request: null
     };
   },
@@ -52,26 +60,17 @@ import axios from 'axios';
       });
       console.log(this.request.data.statusCode)
       if(this.request.data.statusCode != 200){
-        this.errorMessage = this.request.data.message;
-        this.triggerToast('error','Error',this.errorMessage)
+        let errorMessage = this.request.data.message;
+        this.triggerToast('error','Error',errorMessage)
         throw new Error(this.request.data.message)
       }
       console.log(this.request.data.token)
       localStorage.setItem("auth",this.request.data.token);
-      return navigateTo('/');
+      navigateTo('/');
       }catch(error){
         console.log(error)
         this.isLoading = false;
       }
-    },
-    triggerToast(type, title, message) {
-      const { $triggerToast } = useNuxtApp();
-
-      $triggerToast({
-        title: title,
-        message: message,
-        type: type, // e.g., success, error, etc.
-      });
     },
   }
   }
