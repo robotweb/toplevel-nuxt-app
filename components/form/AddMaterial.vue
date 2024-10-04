@@ -30,7 +30,7 @@
       <div class="row">
         <div class="col-12">
             <label for="material-supplier">Supplier</label> 
-            <input id="material-supplier" v-model="supplier" required>
+            <SearchSelect :options="suppliers" v-model="supplier" required/>
         </div>
       </div>
       <div class="row">
@@ -61,6 +61,7 @@
 <script>
 import axios from 'axios'
 import { inject } from 'vue'
+import SearchSelect from '../SearchSelect.vue';
 
 export default {
   setup() {
@@ -78,7 +79,8 @@ export default {
       calculatedPrice: '0.00',
       isLoading: false,
       isDialogOpen: false,
-      toast: inject('toast')
+      toast: inject('toast'),
+      suppliers: [{value: "Supplier 1", label: "Supplier 1"}, {value: "Supplier 2", label: "Supplier 2"}, {value: "Supplier 3", label: "Supplier 3"}]
     };
   },
   methods: {

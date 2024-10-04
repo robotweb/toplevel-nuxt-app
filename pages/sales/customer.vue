@@ -1,13 +1,6 @@
 <template>
   <div>
-      <div>
-        <div class="page-header">
-          <h2>Customers</h2>
-          <button @click="openPopup">Add Customer</button>
-        </div>
-          <Popup :showPopup="showPopup" @close="closePopup">
-            <FormAddCustomer @form-submitted="closePopup"/>
-          </Popup>
+      <div class=row>
       </div>
   </div>
 </template>

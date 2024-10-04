@@ -45,7 +45,7 @@
         </TableCell>
       </TableRow>
       <TableEmpty v-else>
-        <div class="flex justify-center items-center">
+        <div class="flex justify-center items-center min-h-[100px]">
           <LoaderRipple />
         </div>
       </TableEmpty>

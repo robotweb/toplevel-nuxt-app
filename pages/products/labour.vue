@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <FormAddLabour/>
+      <FormAddLabour />
     </div>
   </div>
 </template>
