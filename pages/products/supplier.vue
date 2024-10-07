@@ -1,9 +1,12 @@
 <template>
-    <div>
-        <div class="page-content">
-            <FormAddSupplier />
+        <div class="h-full w-full">
+          <div>
+            <FormAddSupplier  @supplier-added="fetchData"/>
+          </div>
+            <div class="h-full w-full mt-4 ">
+              <DataTable :columns="columns" :data="items" :actions="menuItems"/>
+            </div>
         </div>
-    </div>
 </template>
 <script>
 import axios from 'axios'
@@ -17,26 +20,40 @@ definePageMeta({
   ]
 });
 export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       items: [],
-      loading: true
+      loading: true,
+      columns: [
+        { key: 'supplierCode', label: 'Code', class: 'w-24' },
+        { key: 'supplierName', label: 'Name' },
+      ],
+      menuItems: [
+          {
+            label: 'Edit',
+            action: (key) => {
+              console.log(key)
+              this.editItem(key);
+            },
+          },
+          {
+            label: 'Delete',
+            action: (key) => {
+              this.deleteItem(key);
+            },
+          },
+      ]
     };
   },
   methods: {
-    triggerToast(type, title, message) {
-    const { $triggerToast } = useNuxtApp();
-
-    $triggerToast({
-      title: title,
-      message: message,
-      type: type, // e.g., success, error, etc.
-    });
-    },
     async deleteItem(id){
       try{
         const token = localStorage.getItem('auth');
-        const response = await axios.delete('/api/products/deleteMaterial',{
+        const response = await axios.delete('/api/products/deleteSupplier',{
         params: {
           id: id
         },
@@ -61,14 +78,14 @@ export default {
       const token = localStorage.getItem('auth');
       console.log("check fetching")
       try {
-        const response = await axios.get("/api/products/getMaterial",{
+        const response = await axios.get("/api/products/getSupplier",{
           headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json' // Set content type if sending JSON data
               }
         }
         );
-        //console.log(response)
+        console.log(response)
         this.loading = false;
         this.items = response.data.message;
       } catch (error) {
@@ -76,7 +93,6 @@ export default {
         this.items = [];
         this.loading = false;
       }
-      //console.log(items);
     }
   },
   mounted(){

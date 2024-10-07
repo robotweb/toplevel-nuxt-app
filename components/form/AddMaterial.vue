@@ -29,8 +29,7 @@
       </div>
       <div class="row">
         <div class="col-12">
-            <label for="material-supplier">Supplier</label> 
-            <SearchSelect :options="suppliers" v-model="supplier" required/>
+            <SearchSelect :options="suppliers" @change="supplierChange" :placeholder="supplierPlaceholder"/>
         </div>
       </div>
       <div class="row">
@@ -61,7 +60,6 @@
 <script>
 import axios from 'axios'
 import { inject } from 'vue'
-import SearchSelect from '../SearchSelect.vue';
 
 export default {
   setup() {
@@ -80,7 +78,8 @@ export default {
       isLoading: false,
       isDialogOpen: false,
       toast: inject('toast'),
-      suppliers: [{value: "Supplier 1", label: "Supplier 1"}, {value: "Supplier 2", label: "Supplier 2"}, {value: "Supplier 3", label: "Supplier 3"}]
+      suppliers: [],
+      supplierPlaceholder : "Supplier"
     };
   },
   methods: {
@@ -95,9 +94,30 @@ export default {
     },
     openDialog(){
       this.isDialogOpen = true;
+      this.suppliers = this.getSuppliers();
     },
     closeDialog(){
       this.isDialogOpen = false;
+    },
+    supplierChange(value){
+      this.supplier = value;
+    },
+    async getSuppliers(){
+      const token = localStorage.getItem('auth');
+      let response = await axios.get('/api/products/getSupplier',  {
+          headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json' // Set content type if sending JSON data
+              }
+        })
+        .then((response)=>{
+          let data = response.data.message
+          let suppliers = []
+          data.forEach(element => {
+            suppliers.push({"value" : element.supplierCode, "label": element.supplierName})
+          });
+          this.suppliers = suppliers;
+        })        
     },
     async submitForm() {
       this.isLoading = true;
@@ -135,8 +155,6 @@ export default {
       this.triggerToast("error","Error",error.message);
       //console.error('Error submitting data:', error);
     }
-
-  
 
     this.isLoading = false;
 

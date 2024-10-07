@@ -21,10 +21,6 @@ definePageMeta({
   ]
 });
 export default {
-  setup() {
-    const { triggerToast } = useToast()
-    return { triggerToast }
-  },
   data() {
     return {
       items: [],
@@ -95,7 +91,6 @@ export default {
         this.items = [];
         this.loading = false;
       }
-      //console.log(items);
     }
   },
   mounted(){

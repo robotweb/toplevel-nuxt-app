@@ -5,6 +5,7 @@
       <Button @click="openDialog">Add Supplier</Button>
     </div>
     <DialogContent>
+      <div class="container">
     <DialogHeader>
           <DialogTitle></DialogTitle>
           <DialogDescription>
@@ -30,6 +31,7 @@
     <!-- Add other form fields as needed -->
   </form>
   <LoaderRipple v-if="isLoading"/>
+</div>
 </DialogContent>
 </Dialog>
 </div>
@@ -37,15 +39,14 @@
 <script>
 import axios from 'axios'
 export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       name: '',
       code: '',
-      description: '',
-      discount: null,
-      supplier: '',
-      unitCost: null,
-      calculatedPrice: '0.00',
       isLoading: false,
       isDialogOpen: false,
     };
@@ -57,19 +58,19 @@ export default {
     closeDialog(){
       this.isDialogOpen = false;
     },
+    resetForm(){
+      this.name = '';
+      this.code = '';
+    },
     async submitForm() {
       this.isLoading = true;
       try {
         const token = localStorage.getItem('auth');
         //console.log(token);
 
-        const response = await axios.post(`/api/products/addMaterial`,{
+        const response = await axios.post(`/api/products/addSupplier`,{
           name: this.name,
           code: this.code,
-          description: this.description,
-          discount: this.discount,
-          supplier: this.supplier,
-          unitCost: this.unitCost
         },{
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -83,11 +84,13 @@ export default {
           throw new Error(response.data.details.detail)
         }
 
-        //const result = await response.json();
-        this.triggerToast("success","Success",response.data.message)
-        //console.log('Data submitted successfully:', response.data.details);
-        this.$emit('form-submitted');
+        this.closeDialog();
 
+        //const result = await response.json();
+        this.triggerToast("success","Success",response.data.message);
+        this.resetForm();
+        //console.log('Data submitted successfully:', response.data.details);
+        this.$emit('supplier-added');
       // Redirect to a protected route after login
     } catch (error) {
       this.triggerToast("error","Error",error.message);
@@ -98,15 +101,6 @@ export default {
   },
   keyUp(){
     this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
-  },
-  triggerToast(type, title, message) {
-    const { $triggerToast } = useNuxtApp();
-
-    $triggerToast({
-      title: title,
-      message: message,
-      type: type, // e.g., success, error, etc.
-    });
   },
 },
 };
@@ -161,6 +155,13 @@ textarea{
   padding: 10px;
   width: 100%;
   border: 1px solid lightgray;
+}
+
+.container{
+  max-width: 100%;
+  position: relative;
+  min-height: 100px;
+  overflow: hidden;
 }
 
 </style>

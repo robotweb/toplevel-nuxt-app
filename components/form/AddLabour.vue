@@ -26,22 +26,25 @@
               <Input type="number" placeholder="Cost" v-model="unitCost" required @keyup="keyUp()"/>
             </div>
             <div class="w-1/2">
-              <Input type="string" placeholder="Unit Type" v-model="unitType" required/>
+              <SearchSelect :options="unitTypes" :placeholder="selectPlaceholder" @change="unitTypeChange"/>
             </div>
           </div>
       <DialogFooter>
       <Button type="submit">Save</Button>
     </DialogFooter>
     </form>
-    </DialogContent>
-
     <LoaderRipple v-if="isLoading"/>
+    </DialogContent>
   </Dialog>
 
 </template>
 <script>
 import axios from 'axios'
 export default{
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
     data(){
         return {
             name: "",
@@ -51,7 +54,12 @@ export default{
             unitType: "",
             calculatedPrice: 0,
             isLoading: false,
-            isDialogOpen: false
+            isDialogOpen: false,
+            selectPlaceholder: "Unit type",
+            unitTypes: [
+              {value: "hour", label:"hour"},
+              {value : "day", label: "day"}
+            ]
         }
     },
     methods: {
@@ -102,15 +110,6 @@ export default{
         keyUp(){
             this.calculatedPrice = this.unitCost;
         },
-        triggerToast(type, title, message) {
-    const { $triggerToast } = useNuxtApp();
-
-    $triggerToast({
-      title: title,
-      message: message,
-      type: type, // e.g., success, error, etc.
-    });
-  },
     }
 }
 </script>
