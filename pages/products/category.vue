@@ -1,7 +1,10 @@
 <template>
     <div>
         <div class="page-content">
-            <FormAddCategory />
+            <FormAddCategory @success="fetchData"/>
+            <li v-for="item in items" :key="item.id">
+              {{ item.name }}
+            </li>
         </div>
     </div>
 </template>
@@ -61,7 +64,7 @@ export default {
       const token = localStorage.getItem('auth');
       console.log("check fetching")
       try {
-        const response = await axios.get("/api/products/getMaterial",{
+        const response = await axios.get("/api/products/getCategory",{
           headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json' // Set content type if sending JSON data

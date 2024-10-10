@@ -1,7 +1,7 @@
 <template>
         <div class="h-full w-full">
           <div>
-            <FormAddSupplier  @supplier-added="fetchData"/>
+            <FormAddSupplier  @success="fetchData"/>
           </div>
             <div class="h-full w-full mt-4 ">
               <DataTable :columns="columns" :data="items" :actions="menuItems"/>

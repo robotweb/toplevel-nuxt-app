@@ -26,20 +26,23 @@
               <Input type="number" placeholder="Cost" v-model="unitCost" required @keyup="keyUp()"/>
             </div>
             <div class="w-1/2">
-              <SearchSelect :options="unitTypes" :placeholder="selectPlaceholder" @change="unitTypeChange"/>
+              <Combobox :options="unitTypes" :placeholder="selectPlaceholder" @change="unitTypeChange"></Combobox>
             </div>
           </div>
       <DialogFooter>
       <Button type="submit">Save</Button>
     </DialogFooter>
     </form>
-    <LoaderRipple v-if="isLoading"/>
+  <div v-if="isLoading" class="h-[200px]">
+    <LoaderRipple />
+  </div>  
     </DialogContent>
   </Dialog>
 
 </template>
 <script>
 import axios from 'axios'
+import Combobox from '../Combobox.vue';
 export default{
   setup() {
     const { triggerToast } = useToast()
@@ -55,7 +58,7 @@ export default{
             calculatedPrice: 0,
             isLoading: false,
             isDialogOpen: false,
-            selectPlaceholder: "Unit type",
+            selectPlaceholder: "Select type...",
             unitTypes: [
               {value: "hour", label:"hour"},
               {value : "day", label: "day"}
@@ -98,7 +101,7 @@ export default{
         //console.log('Data submitted successfully:', response.data.message);
         this.triggerToast("success","Success",response.data.message)
         this.closeDialog();
-        this.$emit('form-submitted');
+        this.$emit('success');
 
       // Redirect to a protected route after login
     } catch (error) {

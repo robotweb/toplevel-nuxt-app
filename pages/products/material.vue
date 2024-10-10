@@ -1,7 +1,7 @@
 <template>
     <div class="h-full w-full">
             <div class="row">
-              <FormAddMaterial @material-added="fetchData" />
+              <FormAddMaterial @success="fetchData" />
             </div>
         <div class="h-full w-full mt-4 ">
           <DataTable :columns="columns" :data="items" :actions="menuItems"/>
@@ -21,6 +21,10 @@ definePageMeta({
   ]
 });
 export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       items: [],

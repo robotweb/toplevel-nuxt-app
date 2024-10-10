@@ -30,7 +30,9 @@
 
     <!-- Add other form fields as needed -->
   </form>
-  <LoaderRipple v-if="isLoading"/>
+  <div v-if="isLoading" class="h-[200px]">
+    <LoaderRipple />
+  </div>  
 </div>
 </DialogContent>
 </Dialog>
@@ -90,7 +92,7 @@ export default {
         this.triggerToast("success","Success",response.data.message);
         this.resetForm();
         //console.log('Data submitted successfully:', response.data.details);
-        this.$emit('supplier-added');
+        this.$emit('success');
       // Redirect to a protected route after login
     } catch (error) {
       this.triggerToast("error","Error",error.message);

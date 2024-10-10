@@ -29,7 +29,9 @@
 
     <!-- Add other form fields as needed -->
   </form>
-  <LoaderRipple v-if="isLoading"/>
+  <div v-if="isLoading" class="h-[200px]">
+    <LoaderRipple />
+  </div>  
 </DialogContent>
 </Dialog>
 </div>
@@ -37,6 +39,10 @@
 <script>
 import axios from 'axios'
 export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       name: '',
@@ -46,6 +52,10 @@ export default {
     };
   },
   methods: {
+    resetForm(){
+      this.name = '',
+      this.rank = ''
+    },
     openDialog(){
       this.isDialogOpen = true;
     },
@@ -57,7 +67,7 @@ export default {
       try {
         const token = localStorage.getItem('auth');
 
-        const response = await axios.post(`/api/category/addCategory`,{
+        const response = await axios.post(`/api/products/addCategory`,{
           name: this.name,
           rank: this.rank,
         },{
@@ -75,8 +85,9 @@ export default {
 
         //const result = await response.json();
         this.triggerToast("success","Success",response.data.message)
-        //console.log('Data submitted successfully:', response.data.details);
-        this.$emit('form-submitted');
+        this.closeDialog();
+        this.resetForm();
+        this.$emit('success');
 
       // Redirect to a protected route after login
     } catch (error) {
@@ -85,18 +96,6 @@ export default {
     }
     this.isLoading = false;
 
-  },
-  keyUp(){
-    this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
-  },
-  triggerToast(type, title, message) {
-    const { $triggerToast } = useNuxtApp();
-
-    $triggerToast({
-      title: title,
-      message: message,
-      type: type, // e.g., success, error, etc.
-    });
   },
 },
 };

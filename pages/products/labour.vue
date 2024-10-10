@@ -1,7 +1,7 @@
 <template>
-  <div  class="h-full w-full mt-4 ">
+  <div  class="h-full w-full">
     <div class="row">
-      <FormAddLabour @form-submiited="fetchData"/>
+      <FormAddLabour @success="fetchData"/>
     </div>
     <div class="h-full w-full mt-4 ">
       <DataTable :columns="columns" :data="items" :actions="menuItems"/>
@@ -20,6 +20,10 @@ definePageMeta({
 });
 import axios from 'axios'
 export default {
+  setup() {
+    const { triggerToast } = useToast()
+    return { triggerToast }
+  },
   data() {
     return {
       items: [],
@@ -65,7 +69,32 @@ export default {
         this.items = [];
         this.loading = false;
       }
-    }
+    },
+    async deleteItem(id){
+      try{
+        const token = localStorage.getItem('auth');
+        const response = await axios.delete('/api/products/deleteLabour',{
+        params: {
+          id: id
+        },
+        headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json' // Set content type if sending JSON data
+            }
+      })
+        console.log(response)
+        if(response.data.statusCode != 200){
+          throw new Error(response.data.message)
+        }
+        this.triggerToast("success","Success",response.data.message)
+        this.items = this.items.filter(item => item.id !== id);
+        console.log(this.items)
+
+      }catch(error){
+        console.error("Error fetching data:", error);
+        this.triggerToast("error","Error",error.message)
+      }
+    },
   },
   mounted(){
     this.fetchData();

@@ -29,7 +29,7 @@
       </div>
       <div class="row">
         <div class="col-12">
-            <SearchSelect :options="suppliers" @change="supplierChange" :placeholder="supplierPlaceholder"/>
+            <Combobox :options="suppliers" :placeholder="supplierPlaceholder"></Combobox>
         </div>
       </div>
       <div class="row">
@@ -49,8 +49,9 @@
           <Button type="submit">Save</Button>
     </div>
   </form>
-  <LoaderRipple v-if="isLoading"/>
-  
+  <div v-if="isLoading" class="h-[200px]">
+    <LoaderRipple />
+  </div>  
 
   </div>
 </DialogContent>
@@ -79,7 +80,7 @@ export default {
       isDialogOpen: false,
       toast: inject('toast'),
       suppliers: [],
-      supplierPlaceholder : "Supplier"
+      supplierPlaceholder : "Select supplier..."
     };
   },
   methods: {
@@ -147,7 +148,7 @@ export default {
         this.triggerToast('success', 'Success', 'Product added successfully.')
         this.closeDialog();
         this.resetForm();
-        this.$emit('material-added');
+        this.$emit('success');
         //console.log('Data submitted successfully:', response.data.details);
 
       // Redirect to a protected route after login
