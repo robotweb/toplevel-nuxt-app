@@ -2,14 +2,17 @@
     <div>
         <div class="page-content">
             <FormAddCategory @success="fetchData"/>
-            <li v-for="item in items" :key="item.id">
+          <!--<li v-for="item in items" :key="item.id">
               {{ item.name }}
-            </li>
+            </li> -->  
+            <DraggableList />
         </div>
     </div>
 </template>
 <script>
 import axios from 'axios'
+import DraggableList from '../../components/DraggableList.vue';
+
 definePageMeta({
   layout: 'auth',
   middleware: [
@@ -83,7 +86,7 @@ export default {
     }
   },
   mounted(){
-    this.fetchData();
+    //this.fetchData();
   }
 };
 

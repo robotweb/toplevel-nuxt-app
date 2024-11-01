@@ -17,7 +17,7 @@
     "@tanstack/vue-table": "^8.20.5",
     "@vueuse/components": "^11.1.0",
     "@vueuse/core": "^11.1.0",
-    "axios": "^1.7.5",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "mitt": "^3.0.1",
@@ -27,7 +27,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vue": "latest",
-    "vuedraggable": "^2.24.3",
+    "vuedraggable": "^4.1.0",
     "vuetify": "^3.7.2"
   },
   "devDependencies": {

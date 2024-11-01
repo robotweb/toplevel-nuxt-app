@@ -37,7 +37,7 @@
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent class="mx-2">
-              <DropdownMenuItem v-for="action in actions" :key="action.label" @click="action.action(item['id'])">
+              <DropdownMenuItem v-for="action in actions" :key="action.label" @click="action.action(item)">
                 {{ action.label }}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -69,7 +69,7 @@ export default defineComponent({
       required: true
     },
     actions: {
-      type: Array as PropType<{ action: (key: string) => void; label: string }[]>,
+      type: Array as PropType<{ action: (key) => void; label: string }[]>,
       required: false
     }
   },

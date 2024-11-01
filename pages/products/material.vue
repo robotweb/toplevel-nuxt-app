@@ -1,13 +1,59 @@
 <template>
     <div class="h-full w-full">
             <div class="row">
-              <FormAddMaterial @success="fetchData" />
+              <FormAddMaterial @success="fetchData"/>
             </div>
         <div class="h-full w-full mt-4 ">
           <DataTable :columns="columns" :data="items" :actions="menuItems"/>
         </div>
-          
-    </div>
+        <Dialog v-model:open="isOpen" :close="isClose">
+            <DialogContent>
+                <div class="material-container">
+                  <form v-show="!isLoading" @submit.prevent="submitEdit">
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="col-12">
+                          <Input type="string" placeholder="Code"  v-model="editable.code" value="editable.code"/>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="col-12">
+                          <Input type="string" placeholder="Name"  v-model="editable.name" required/>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <Textarea required  placeholder="Description" v-model="editable.description"/>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                          <Combobox :options="suppliers" :placeholder="supplierPlaceholder" v-model="editable.supplier"></Combobox>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="col-12">
+                          <Input type="number" placeholder="Price" required @keyup="keyUp()" v-model="editable.unitCost"/>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="col-12">
+                          <Input type="number" placeholder="Discount (%)"  v-model="editable.discount" required @keyup="keyUp()"/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <label class="col-12"><p><strong>Price {{ calculatedPrice }}</strong></p></label>
+                        <Button type="submit">Save</Button>
+                    </div>
+              </form>
+              </div>
+            </DialogContent>
+        </Dialog>
+        </div>
 </template>
 <script>
 import axios from 'axios'
@@ -27,6 +73,8 @@ export default {
   },
   data() {
     return {
+      isOpen: false,
+      editable: null,
       items: [],
       columns: [
         { key: 'code', label: 'Code', class: 'w-24' },
@@ -36,7 +84,6 @@ export default {
           {
             label: 'Edit',
             action: (key) => {
-              console.log(key)
               this.editItem(key);
             },
           },
@@ -50,8 +97,9 @@ export default {
     };
   },
   methods: {
-    async deleteItem(id){
+    async deleteItem(item){
       try{
+        let id = item.id
         const token = localStorage.getItem('auth');
         const response = await axios.delete('/api/products/deleteMaterial',{
         params: {
@@ -95,6 +143,12 @@ export default {
         this.items = [];
         this.loading = false;
       }
+    },
+    editItem(key){
+      console.log(key)
+      this.editable = key;
+      this.editCode = key.code
+      this.isOpen = true;
     }
   },
   mounted(){
