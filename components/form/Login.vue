@@ -52,14 +52,18 @@ import axios from 'axios';
     async login(){
       this.isLoading = true;
       try{
-        this.request = await axios.post("/api/login",{
+        this.request = await axios.post(`https://toplevel-api.robotws.co.za/api/admin/customLogin`,{
           email: this.email,
           password: this.password
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       },{
         timeout: 5000
       });
-      console.log(this.request.data.statusCode)
-      if(this.request.data.statusCode != 200){
+      console.log(this.request);
+      if(this.request.status != 200){
         let errorMessage = this.request.data.message;
         this.triggerToast('error','Error',errorMessage)
         throw new Error(this.request.data.message)
