@@ -33,6 +33,5 @@ export default defineNuxtConfig({
       apiUrl: process.env.API_URL,
     },
   },
-
   modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt", "@nuxt/icon"],
 });
