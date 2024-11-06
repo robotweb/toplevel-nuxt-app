@@ -1,29 +1,61 @@
-// composables/useApi.ts
-import { useFetch, useRuntimeConfig } from "nuxt/app";
-
-interface ApiResponse<T> {
-  data: T | null;
-  error: Error | null;
-}
-
-// Define a type for allowed HTTP methods
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
-
-interface ApiOptions {
-  headers?: Record<string, string>;
-  method?: HttpMethod;
-  body?: any;
-}
-
-// Generic function to handle API fetch with proper typing
-export function useApiFetch<T>(url: string, options?: ApiOptions) {
+export const useApi = () => {
   const config = useRuntimeConfig();
-  return useFetch<T>(`${config.public.apiUrl}${url}`, {
-    method: (options?.method?.toLowerCase() as any) || "get",
-    headers: options?.headers || {
-      "Content-Type": "application/json",
-      //Authorization: `Bearer ${localStorage.getItem("auth")}`,
-    },
-    body: options?.body,
-  });
+  const baseUrl = config.public.apiUrl
+
+  const get = async <T>(endpoint: string) => {
+    return await $fetch<T>(`${baseUrl}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth')}`
+      }
+    })
+  }
+
+  const post = async <T>(endpoint: string, payload: any) => {
+    try {
+      console.log('Request URL:', `${baseUrl}${endpoint}`)
+      console.log('Request Payload:', payload)
+
+      return await $fetch<T>(`${baseUrl}${endpoint}`, {
+        method: 'POST',
+        body: payload,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth')}`
+        },
+      })
+    } catch (err) {
+      console.error('API Error:', err)
+      throw err
+    }
+  }
+
+  const _delete = async <T>(endpoint: string, options = {}) => {
+    const queryString = options.params ? `?${new URLSearchParams(options.params)}` : '';
+    return await $fetch<T>(`${baseUrl}${endpoint}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth')}`
+      },
+      ...options
+    })
+  }
+
+  const put = async <T>(endpoint: string, payload: any) => {
+    return await $fetch<T>(`${baseUrl}${endpoint}`, {
+      method: 'PUT',
+      body: payload,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth')}`
+      }
+    })
+  }
+
+  return {
+    get,
+    post,
+    _delete,
+    put
+  }
 }
