@@ -4,8 +4,6 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <h2 class="text-2xl font-bold">Estimate</h2>
-        <span class="px-4 py-2 bg-green-500 text-white rounded-lg">Quotation</span>
-        <a href="#" class="text-blue-500">Convert to Invoice</a>
       </div>
     </div>
 
