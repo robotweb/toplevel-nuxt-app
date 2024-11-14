@@ -13,7 +13,6 @@ definePageMeta({
     },
     'auth',
   ],
-  layout: 'auth',
 });
 export default{
   methods:{

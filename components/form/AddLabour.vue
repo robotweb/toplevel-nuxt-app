@@ -1,60 +1,55 @@
 <template>
   <Dialog v-model:open="isDialogOpen">
-      <Button @click="openDialog">Add Labour</Button>
     <DialogContent>
       <DialogHeader>
         <DialogTitle></DialogTitle>
         <DialogDescription>
         </DialogDescription>
       </DialogHeader>
-      <form  v-show="!isLoading" @submit.prevent="submitForm">
-      <div class="row w-full flex flex-row gap-4 my-4">
-          <div class="w-1/2">
-            <Input type="string" placeholder="Code"  v-model="code" required/>
-          </div>
-          <div class="w-1/2">
-            <Input type="string" placeholder="Name"  v-model="name" required/>
-          </div>
-        </div>
-        <div class="row my-4">
-          <div class="w-full">
-            <Textarea type="string" placeholder="Description"  v-model="description" required/>
-          </div>
-        </div>
-        <div class="row w-full flex flex-row gap-4 my-4">
-            <div class="w-1/2">
-              <Input type="number" placeholder="Cost" v-model="unitCost" required @keyup="keyUp()"/>
-            </div>
-            <div class="w-1/2">
-              <Combobox :options="unitTypes" :placeholder="selectPlaceholder" @change="unitTypeChange"></Combobox>
-            </div>
-          </div>
+      <div class="flex flex-col gap-2">
+            <Input type="string" placeholder="Code"  v-model="data.code" required/>
+            <Input type="string" placeholder="Name"  v-model="data.name" required/>
+            <Textarea type="string" placeholder="Description"  v-model="data.description" required/>
+            <Input type="number" placeholder="Cost" v-model="data.unitCost" required @keyup="keyUp()"/>
+            <Popover>
+              <PopoverTrigger>
+                <Button variant="outline" role="combobox" class="w-full justify-between">{{ selectedUnitType || 'Select type...' }} <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" /></Button>
+              </PopoverTrigger>
+              <PopoverContent class="w-full p-0">
+                <Command>
+                  <CommandInput class="border-0" placeholder="Search type..." />
+                  <CommandEmpty>No type found.</CommandEmpty>
+                  <CommandList>
+                    <CommandItem v-for="unitType in unitTypes" :key="unitType.value" :value="unitType.value" @click="unitTypeChange(unitType)">
+                      {{ unitType.label }}
+                    </CommandItem>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+      </div>
       <DialogFooter>
-      <Button type="submit">Save</Button>
+      <Button v-if="!data.id" @click="addLabour" type="submit">Save</Button>
+      <Button v-if="data.id" @click="editLabour" type="submit">Edit</Button>
     </DialogFooter>
-    </form>
-  <div v-if="isLoading" class="h-[200px]">
-    <LoaderRipple />
-  </div>  
     </DialogContent>
   </Dialog>
 
 </template>
 <script>
-import axios from 'axios'
-import Combobox from '../Combobox.vue';
 export default{
-  setup() {
-    const { triggerToast } = useToast()
-    return { triggerToast }
+  props: {
+    data: {
+      type: Object,
+      required: false
+    },
+    isDialogOpen: {
+      type: Boolean,
+      required: false
+    }
   },
     data(){
         return {
-            name: "",
-            code: "",
-            description: "",
-            unitCost: null,
-            unitType: "",
             calculatedPrice: 0,
             isLoading: false,
             isDialogOpen: false,
@@ -66,61 +61,43 @@ export default{
         }
     },
     methods: {
-      openDialog(){
-        this.isDialogOpen = true;
-      },
-      closeDialog(){
-        this.isDialogOpen = false;
-      },
-        async submitForm(){
-            this.isLoading = true;
-            try {
-        const token = localStorage.getItem('auth');
-        //console.log(token);
-
-        const response = await axios.post(`/api/products/addLabour`,{
-          name: this.name,
-          code: this.code,
-          description: this.description,
-          unitType: this.unitType,
-          unitCost: this.unitCost
-        },{
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json' // Set content type if sending JSON data
-            }
-          }
-        )
-
-        console.log(response);
-        if(response.data.statusCode != 200){
-          throw new Error(response.data.details)
-        }
-
-        //const result = await response.json();
-        //console.log('Data submitted successfully:', response.data.message);
-        this.triggerToast("success","Success",response.data.message)
-        this.closeDialog();
-        this.$emit('success');
-
-      // Redirect to a protected route after login
-    } catch (error) {
-        //console.error('Error submitting data:', error);
-        this.triggerToast("error","Error",error.message);
-    }
-    this.isLoading = false;
-        },
-        keyUp(){
-            this.calculatedPrice = this.unitCost;
-        },
+      openDialog,
+      closeDialog,
+      keyUp,
+      addLabour,
+      editLabour
     }
 }
+
+function unitTypeChange(unitType){
+  this.selectedUnitType = unitType.label;
+  this.data.unitType = unitType.value;
+}
+
+function keyUp(){
+  this.calculatedPrice = this.unitCost;
+}
+
+function closeDialog(){
+  this.isDialogOpen = false;
+}
+
+function openDialog(){
+  this.isDialogOpen = true;
+}
+
+async function addLabour(){
+  const api = useApi();
+  const response = await api.post('/api/labour/addLabour', this.data);
+  console.log(response);
+  this.$emit('success');
+}
+
+async function editLabour(){
+  const api = useApi();
+  const response = await api.put('/api/labour/updateLabour', this.data);
+  console.log(response);
+  this.$emit('success');
+}
+
 </script>
-<style>
-.labour-container{
-    width: 500px;
-    max-width: 100%;
-    min-height: 300px;
-    position: relative;
-}
-</style>

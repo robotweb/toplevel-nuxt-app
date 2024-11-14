@@ -1,222 +1,113 @@
 <template>
-   <Dialog v-model:open="isDialogOpen">
-    <Button @click="openDialog">Add Material</Button>
+   <Dialog v-bind:open="isDialogOpen">
+    <DialogTrigger></DialogTrigger>
     <DialogContent>
   <DialogHeader>
         <DialogTitle></DialogTitle>
         <DialogDescription>
         </DialogDescription>
   </DialogHeader>
-  <div class="material-container">
-    <form v-show="!isLoading" @submit.prevent="submitForm">
-      <div class="row">
-        <div class="col-6">
-          <div class="col-12">
-            <Input type="string" placeholder="Code"  v-model="code" required/>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="col-12">
-            <Input type="string" placeholder="Name"  v-model="name" required/>
-          </div>
-        </div>
-
+  <div class="flex flex-col gap-2">
+      <Input type="string" placeholder="Code"  v-model="data.code" required/>
+      <Input type="string" placeholder="Name"  v-model="data.name" required/>
+      <Textarea v-model="data.description" required  placeholder="Description" />
+      <Input type="number" placeholder="Price"  v-model="data.unitCost" required @keyup="keyUp()"/>
+      <Input type="number" placeholder="Discount (%)"  v-model="data.discount" required @keyup="keyUp()"/>
+      <Popover v-model:open="isPopoverOpen">
+        <PopoverTrigger>
+          <Button variant="outline" role="combobox" class="w-full justify-between">
+            {{ selectedSupplier?.supplierName || 'Select supplier...' }}
+            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent class="w-full p-0">
+          <Command>
+            <CommandInput class="border-0" placeholder="Search supplier..." />
+            <CommandEmpty>No supplier found.</CommandEmpty>
+            <CommandList>
+              <CommandItem 
+                v-for="supplier in suppliers" 
+                :key="supplier.id"
+                @click="supplierChange(supplier)"
+              >
+                {{ supplier.supplierName }}
+              </CommandItem>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      <label class="text-sm font-medium w-full flex justify-end py-2"><p><strong>Price {{ calculatedPrice }}</strong></p></label>
+      <div class="flex justify-end">
+        <Button v-if="!data.id" @click="addMaterial" type="submit">Save</Button>
+        <Button v-if="data.id" @click="editMaterial" type="submit">Edit</Button>
       </div>
-      <div class="row">
-        <div class="col-12">
-          <Textarea v-model="description" required  placeholder="Description" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-            <Combobox :options="suppliers" :placeholder="supplierPlaceholder"></Combobox>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div class="col-12">
-            <Input type="number" placeholder="Price"  v-model="unitCost" required @keyup="keyUp()"/>
-          </div>
-        </div>
-        <div class="col-6">
-          <div class="col-12">
-            <Input type="number" placeholder="Discount (%)"  v-model="discount" required @keyup="keyUp()"/>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <label class="col-12"><p><strong>Price {{ calculatedPrice }}</strong></p></label>
-          <Button type="submit">Save</Button>
-    </div>
-  </form>
-  <div v-if="isLoading" class="h-[200px]">
-    <LoaderRipple />
-  </div>  
-
   </div>
 </DialogContent>
 </Dialog>
 </template>
 
 <script>
-import axios from 'axios'
-import { inject } from 'vue'
-
 export default {
-  setup() {
-    const { triggerToast } = useToast()
-    return { triggerToast }
+  props: {
+    data: {
+      type: Object,
+      required: false
+    },
+    isDialogOpen: {
+      type: Boolean,
+      required: false
+    }
   },
   data() {
     return {
-      name: '',
-      code: '',
-      description: '',
-      discount: null,
-      supplier: '',
-      unitCost: null,
       calculatedPrice: '0.00',
       isLoading: false,
       isDialogOpen: false,
-      toast: inject('toast'),
       suppliers: [],
-      supplierPlaceholder : "Select supplier..."
+      supplierPlaceholder : "Select supplier...",
+      isPopoverOpen: false,
+      selectedSuppier: null
     };
   },
   methods: {
-    resetForm(){
-      this.name = '';
-      this.code = '';
-      this.description = '';
-      this.discount = null;
-      this.supplier = '';
-      this.unitCost = null;
-      this.calculatedPrice = '0.00';
-    },
-    openDialog(){
-      this.isDialogOpen = true;
-      this.suppliers = this.getSuppliers();
-    },
-    closeDialog(){
-      this.isDialogOpen = false;
-    },
-    supplierChange(value){
-      this.supplier = value;
-    },
-    async getSuppliers(){
-      const token = localStorage.getItem('auth');
-      let response = await axios.get('/api/products/getSupplier',  {
-          headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json' // Set content type if sending JSON data
-              }
-        })
-        .then((response)=>{
-          let data = response.data.message
-          let suppliers = []
-          data.forEach(element => {
-            suppliers.push({"value" : element.supplierCode, "label": element.supplierName})
-          });
-          this.suppliers = suppliers;
-        })        
-    },
-    async submitForm() {
-      this.isLoading = true;
-      try {
-        const token = localStorage.getItem('auth');
-        const response = await axios.post(`/api/products/addMaterial`,{
-          name: this.name,
-          code: this.code,
-          description: this.description,
-          discount: this.discount,
-          supplier: this.supplier,
-          unitCost: this.unitCost
-        },{
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json' // Set content type if sending JSON data
-            }
-          }
-        )
-
-        console.log(response);
-        if(response.data.statusCode != 200){
-          throw new Error(response.data.details.detail)
-        }
-
-        //const result = await response.json();
-        this.triggerToast('success', 'Success', 'Product added successfully.')
-        this.closeDialog();
-        this.resetForm();
-        this.$emit('success');
-        //console.log('Data submitted successfully:', response.data.details);
-
-      // Redirect to a protected route after login
-    } catch (error) {
-      this.triggerToast("error","Error",error.message);
-      //console.error('Error submitting data:', error);
-    }
-
-    this.isLoading = false;
-
+    getSuppliers,
+    supplierChange,
+    addMaterial,
+    editMaterial,
+    keyUp
   },
-  keyUp(){
-    this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
-  },
-},
+  mounted(){
+    this.getSuppliers();
+  }
 };
+
+async function getSuppliers(){
+  const api = useApi();
+  const response = await api.get('/api/supplier/getAllSuppliers');
+  this.suppliers = response;        
+}
+
+function supplierChange(supplier) {
+  this.selectedSupplier = supplier;
+  this.data.supplierId = supplier.id;
+  this.isPopoverOpen = false;
+}
+
+async function addMaterial(){
+  const api = useApi();
+  const response = await api.post('/api/material/addMaterial', this.data);
+  this.$emit('success');
+  this.isDialogOpen = false;
+}
+
+async function editMaterial(){
+  const api = useApi();
+  const response = await api.put('/api/material/updateMaterial', this.data);
+  this.$emit('success');
+  this.isDialogOpen = false;
+}
+
+function keyUp(){
+  this.calculatedPrice = this.unitCost - (this.unitCost * this.discount/100);
+}
 </script>
-<style>
-.flexForm{
-  display: flex;
-  flex-direction: column;
-  align-items: space-between;
-}
-
-.material-container{
-  max-width: 100%;
-  min-height: 300px;
-  position: relative;
-}
-
-.button{
-  margin: 10px 0;
-}
-
-.row{
-  display: flex;
-  width: 100%;
-  padding: 5px;
-  align-items: center;
-}
-
-.col-6{
-  width: 50%;
-}
-
-.col-12{
-  width: 100%;
-  padding: 0 15px;
-}
-
-input{
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid lightgray;
-  width: 100%;
-}
-
-label{
-  display: block;
-  margin-bottom: 5px;
-  color: #a9a9a9;
-  font-weight: 300;
-  font-size: small;
-}
-textarea{
-  padding: 10px;
-  width: 100%;
-  border: 1px solid lightgray;
-}
-
-</style>

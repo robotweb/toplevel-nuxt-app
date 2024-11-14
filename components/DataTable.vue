@@ -37,18 +37,23 @@
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent class="mx-2">
-              <DropdownMenuItem v-for="action in actions" :key="action.label" @click="action.action(item['id'])">
-                {{ action.label }}
+              <DropdownMenuItem v-for="action in actions" :key="action.label" @click="action.action(item)">
+                <Icon :name="action.icon" class="w-4 h-4 mr-2" /> {{ action.label }}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>
       </TableRow>
-      <TableEmpty v-else>
-        <div class="flex justify-center items-center min-h-[100px]">
+      <TableRow v-if="loading">
+        <TableCell :colspan="columns.length + (actions ? 1 : 0)" class="px-6 py-4 text-center text-gray-500">
           <LoaderRipple />
-        </div>
-      </TableEmpty>
+        </TableCell>
+      </TableRow>
+      <TableRow v-if="data.length === 0">
+        <TableCell :colspan="columns.length + (actions ? 1 : 0)" class="px-6 py-4 text-center text-gray-500">
+          No records to display
+        </TableCell>
+      </TableRow>
     </TableBody>
   </Table>
 </div>
@@ -69,8 +74,13 @@ export default defineComponent({
       required: true
     },
     actions: {
-      type: Array as PropType<{ action: (key: string) => void; label: string }[]>,
+      type: Array as PropType<{ action: (key) => void; label: string }[]>,
       required: false
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   methods: {
@@ -83,8 +93,3 @@ export default defineComponent({
   }
 })
 </script>
-<style>
-.w-auto {
-  width: auto;
-}
-</style>

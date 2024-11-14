@@ -1,15 +1,15 @@
 <template>
         <div class="h-full w-full">
-          <div>
-            <FormAddSupplier  @success="fetchData"/>
+          <div class="flex items-center justify-end">
+            <Button @click="addSupplier"><Icon name="lucide:plus" size="24" />Add Supplier</Button>
           </div>
+          <FormAddSupplier @success="onSuccess" v-model:open="isDialogOpen" :data="selectedItem"/>
             <div class="h-full w-full mt-4 ">
-              <DataTable :columns="columns" :data="items" :actions="menuItems"/>
+              <DataTable :columns="columns" :data="items" :actions="menuItems" :loading="loading"/>
             </div>
         </div>
 </template>
 <script>
-import axios from 'axios'
 definePageMeta({
   layout: 'auth',
   middleware: [
@@ -20,12 +20,14 @@ definePageMeta({
   ]
 });
 export default {
-  setup() {
-    const { triggerToast } = useToast()
-    return { triggerToast }
-  },
   data() {
     return {
+      isDialogOpen: false,
+      selectedItem: {
+        id: null,
+        itemCode: '',
+        supplierName: ''
+      },
       items: [],
       loading: true,
       columns: [
@@ -34,6 +36,7 @@ export default {
       ],
       menuItems: [
           {
+            icon: 'lucide:edit',
             label: 'Edit',
             action: (key) => {
               console.log(key)
@@ -41,6 +44,7 @@ export default {
             },
           },
           {
+            icon: 'lucide:trash',
             label: 'Delete',
             action: (key) => {
               this.deleteItem(key);
@@ -50,55 +54,61 @@ export default {
     };
   },
   methods: {
-    async deleteItem(id){
-      try{
-        const token = localStorage.getItem('auth');
-        const response = await axios.delete('/api/products/deleteSupplier',{
-        params: {
-          id: id
-        },
-        headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json' // Set content type if sending JSON data
-            }
-      })
-        console.log(response)
-        if(response.data.statusCode != 200){
-          throw new Error(response.data.message)
-        }
-        this.triggerToast("success","Success",response.data.message)
-        this.items = this.items.filter(item => item.id !== id);
-
-      }catch(error){
-        console.error("Error fetching data:", error);
-        this.triggerToast("error","Error",error.message)
-      }
-    },
-    async fetchData(){
-      const token = localStorage.getItem('auth');
-      console.log("check fetching")
-      try {
-        const response = await axios.get("/api/products/getSupplier",{
-          headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json' // Set content type if sending JSON data
-              }
-        }
-        );
-        console.log(response)
-        this.loading = false;
-        this.items = response.data.message;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        this.items = [];
-        this.loading = false;
-      }
-    }
+    fetchData,
+    deleteItem,
+    editItem,
+    openDialog,
+    closeDialog,
+    onSuccess,
+    addSupplier
   },
   mounted(){
     this.fetchData();
   }
 };
+
+async function addSupplier(){
+  console.log('addSupplier')
+  this.selectedItem = {
+    id: null,
+    itemCode: '',
+    supplierName: ''
+  }
+  this.openDialog();
+}
+
+async function onSuccess(){
+  this.fetchData();
+  this.closeDialog();
+}
+
+async function editItem(key){
+  this.selectedItem = key;
+  this.openDialog();
+}
+
+function openDialog(){
+  this.isDialogOpen = true;
+}
+
+function closeDialog(){
+  this.isDialogOpen = false;
+}
+
+async function fetchData(){
+  const api = useApi();
+  const response = await api.get('/api/supplier/getAllSuppliers');
+  this.items = response;
+  this.loading = false;
+
+}
+
+async function deleteItem(key){
+  const id = key.id;
+  const api = useApi();
+  const response = await api._delete(`/api/supplier/deleteSupplier`, { params: { id: id } });
+  this.fetchData();
+}
 
 </script>
 

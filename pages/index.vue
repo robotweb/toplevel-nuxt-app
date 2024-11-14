@@ -3,14 +3,8 @@
       
     </div>
 </template>
-<script setup lang="ts">
+<script>
 definePageMeta({
-  layout: 'auth',
-  middleware: [
-    function (to, from) {
-      // Custom inline middleware
-    },
-    'auth',
-  ],
-});
+  layout: 'auth'
+})
 </script>
