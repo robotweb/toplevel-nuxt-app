@@ -11,7 +11,9 @@
       <Input type="string" placeholder="Code"  v-model="data.code" required/>
       <Input type="string" placeholder="Name"  v-model="data.name" required/>
       <Textarea v-model="data.description" required  placeholder="Description" />
+      <p class="text-sm font-medium w-full flex"><strong>Price</strong></p>
       <Input type="number" placeholder="Price"  v-model="data.unitCost" required @keyup="keyUp()"/>
+      <p class="text-sm font-medium w-full flex"><strong>Discount</strong></p>
       <Input type="number" placeholder="Discount (%)"  v-model="data.discount" required @keyup="keyUp()"/>
       <Popover v-model:open="isPopoverOpen">
         <PopoverTrigger>
@@ -96,6 +98,7 @@ function supplierChange(supplier) {
 async function addMaterial(){
   const api = useApi();
   const response = await api.post('/api/material/addMaterial', this.data);
+  console.log(response);
   this.$emit('success');
   this.isDialogOpen = false;
 }

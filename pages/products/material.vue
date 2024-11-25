@@ -61,6 +61,7 @@ export default {
     openDialog,
     closeDialog,
     resetData,
+    onSuccess
   },
   mounted(){
     this.fetchData();
@@ -70,6 +71,7 @@ export default {
 async function onSuccess(){
   console.log('onSuccess')
   this.fetchData();
+  this.closeDialog();
 }
 
 function openDialog(){
@@ -87,6 +89,8 @@ function resetData(){
     id: null,
     code: '',
     name: '',
+    unitCost: 0,
+    discount: 0,
     description: '',
     supplierId: null,
     unitType: null
