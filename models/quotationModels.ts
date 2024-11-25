@@ -1,3 +1,5 @@
+import {type CategoryModel} from "./categoryModels";
+
 export interface QuotationCreateRequest {
   quotationId: string;
   businessName: string;
@@ -35,11 +37,6 @@ export enum QuotationType {
   Estimate,
 }
 
-export interface CategoryModel {
-  id: string;
-  name: string;
-  rank: number;
-}
 
 export interface SubCategoryModel {
   id: string;

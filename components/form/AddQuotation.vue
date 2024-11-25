@@ -140,13 +140,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { QuotationCreateRequest, QuotationType, QuoteItems } from '../../models/quotationModels';
-import { useFetch, useRuntimeConfig } from 'nuxt/app';
 import { CustomerResponse } from '../../models/customerModels';
 import Combobox from '../Combobox.vue';
 import {LineItemCostCalculationResponse} from "../../models/LineItemModels";
 
 const open = ref(false)
 const value = ref('')
+
 const customerData = ref<CustomerResponse[] | null>([{
   id: 'yyuu',
   name: 'faieez Tech',
@@ -165,39 +165,17 @@ const error = ref<string | null>(null);
 const isLoading = ref(false);
 
 const fetchCustomerData = async () => {
-  const token = localStorage.getItem('authToken');
-  const config = useRuntimeConfig();
+  const api = useApi();
 
-  const { data, error: fetchError } = await useFetch<CustomerResponse[]>(`${config.public.apiUrl}/api/customer/getCustomers`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : ''
-    },
-    immediate: true, // Fetch immediately
-  });
-
-  if (fetchError.value) {
-    error.value = fetchError.value.message;
-  } else {
-    customerData.value = [...customerData.value,...data.value];
-  }
+  const response = await api.get<CustomerResponse[]>('/api/customer/getCustomers');
+  customerData.value = [...customerData.value,...response];
 };
 
 const fetchItemsData = async () => {
-  const token = localStorage.getItem('authToken');
-  const config = useRuntimeConfig();
+  const api = useApi();
 
-  const { data , error: fetchError } = await useFetch<LineItemCostCalculationResponse[]>(`${config.public.apiUrl}/api/lineitem/getAllLineItems`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : ''
-    },
-    immediate: true, // Fetch immediately
-  });
-
-  if (fetchError.value) {
-    error.value = fetchError.value.message;
-  } else {
-    allLineItems.value = data.value.data;
-  }
+  const response = await api.get<LineItemCostCalculationResponse[]>('/api/lineitem/getAllLineItems');
+  allLineItems.value = response.data;
 };
 
 onMounted(async () => {
@@ -242,9 +220,10 @@ const formData = ref<QuotationCreateRequest>({
 const handleCustomEvent = (data: string) => {
   console.log('Received event with data:', data);
   var selectedCustomer = customerData.value.find(c => c.id == data);
-  formData.value.clientName = selectedCustomer.contacts[0].name;
-  formData.value.clientEmail = selectedCustomer.contacts[0].email;
-  formData.value.clientContact = selectedCustomer.contacts[0].mobileNumber;
+  console.log('slected customer:', JSON.stringify(selectedCustomer));
+  // formData.value.clientName = selectedCustomer.contacts[0].name;
+  // formData.value.clientEmail = selectedCustomer.contacts[0].email;
+  // formData.value.clientContact = selectedCustomer.contacts[0].mobileNumber;
   formData.value.businessName = selectedCustomer.name;
 };
 
