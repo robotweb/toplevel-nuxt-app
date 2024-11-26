@@ -1,14 +1,50 @@
-<script setup  lang="ts" >
+<script setup  lang="ts">
 
 import {MaterialResponse} from "../../models/materialModels";
 import {ref} from "vue";
 import {LabourResponse} from "../../models/labourModels";
 import {
   LineItemCostCalculationCreateRequest,
-  LineItemCostCalculationResponse
+  LineItemCostCalculationResponse,
+  Tag
 } from "../../models/lineItemCostCalculationModels";
 import {CategoryResponseModel} from "../../models/categoryModels";
 
+const lineItemCostCalculationData = ref<LineItemCostCalculationResponse[] | null>([{
+  id:'',
+  name: '',
+  description: '',
+  code: '',
+  category: {
+    id: "",
+    name: "",
+    rank: 0,
+  },
+  markupPercentage: 0,
+  subTotal: 0,
+  total: 0,
+  markupCost: 0,
+  items: [
+    {
+      id: "",
+      name: "",
+      itemDescription: "",
+      code: "",
+      unitOfMeasure: "",
+      listDiscountPercentage: 0,
+      quantityPerItem: 0,
+      listPrice: 0,
+      quantityRequired: 0,
+      discountPrice: 0,
+      wasteAllowedPrice: 0,
+      wasteAllowedPercentage: 0,
+      listQuantity: 0,
+      totalCost: 0,
+      tag: Tag.Material
+    },
+  ]
+}
+]);
 const materialData = ref<MaterialResponse[] | null>([{
     id: '',
     name: '',
